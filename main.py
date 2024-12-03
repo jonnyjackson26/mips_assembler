@@ -166,9 +166,31 @@ def encode_program(lines, label_table, data_table):
         encoded_program.append(encode_instruction(i, line, label_table, data_table))
     return encoded_program
 
-def print_encoded_program(encoded_program):
-    for line in encoded_program:
-        print(line)
+
+def binary_to_hex(binary_str):
+    cleaned_binary = binary_str.replace(" ", "") #remove spaces
+    binary_length = len(cleaned_binary)
+    
+    padding_needed = (4 - (binary_length % 4)) % 4 # Determine how many zeros to pad to make the length a multiple of 4
+    
+    padded_binary = cleaned_binary.zfill(binary_length + padding_needed) # Add the necessary padding
+    binary_as_int = int(padded_binary, 2) #convert to int
+    
+    # Convert the integer to a hexadecimal string
+    hex_str = hex(binary_as_int)[2:].upper()  # [2:] to remove the '0x' prefix
+   
+    # Each 4 binary digits correspond to 1 hexadecimal digit
+    hex_length = (len(padded_binary) + 3) // 4  # Round up to ensure full coverage
+    
+    # Pad the hexadecimal string with leading zeros to match the required length
+    padded_hex = hex_str.zfill(hex_length)
+    return padded_hex
+
+def post_process(lines):
+    newLines=[]
+    for line in lines:
+        newLines.append(binary_to_hex(line)+" ")
+    return newLines
 
 def print_lines(lines):
     for line in lines:
@@ -199,18 +221,18 @@ def main():
    
     # Step 4: Encode the program into a list of binary strings
     encoded_program = encode_program(lines, label_table, data_table)
-    print_encoded_program(encoded_program)
+    #print_lines(encoded_program)
 
     # Step 5: Convert the strings to hexadecimal and write them to a file
-    # hex_program = post_process(encoded_program)
-    # with open("output.hex", "w") as outfile:
-    #     outfile.write("v3.0 hex words addressed\n00: ")
-    #     outfile.writelines(hex_program)
+    hex_program = post_process(encoded_program)
+    with open("output.hex", "w") as outfile:
+        outfile.write("v3.0 hex words addressed\n00: ")
+        outfile.writelines(hex_program)
 
     # Step 6: Convert the data list to hexadecimal and write it to a file
-    # with open("data.hex", "w") as outfile:
-    #     outfile.write("v3.0 hex words addressed\n00: ")
-    #     outfile.writelines([f"{d:04x} " for d in data_list])
+    with open("data.hex", "w") as outfile:
+        outfile.write("v3.0 hex words addressed\n00: ")
+        outfile.writelines([f"{d:04x} " for d in data_list])
 
 
 if __name__ == "__main__":
