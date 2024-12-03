@@ -27,7 +27,7 @@ makeScreenRed:
     sw R3, 0(R1)
     addi R1, R1, 1        # Move to next address
     display
-    
+
     # Check if we've reached the end of the screen
     beq R1, R2, drawEnd
 
@@ -36,14 +36,23 @@ makeScreenRed:
 drawEnd:
     lw R4, keyboardMem    # Load keyboard memory value
     lw R4, 0(R4)
-    lw R5, sKey           # Load "S" key value
-    bne R4, R5, drawEnd               # Restart the main loop
-    
+    lw R5, sKey  
+    beq R4, R5, drawBlue
+    lw R5, wKey  
+    beq R4, R5, drawGreen
+    j drawEnd
 
 
-setBlue:
+drawBlue:
     lw R1, screenStart
     lw R3, colorBlue      # Change current color to blue
     sw R3, 0(R1)
     display
+    j drawEnd
      
+drawGreen:
+    lw R1, screenStart
+    lw R3, colorGreen      # Change current color to blue
+    sw R3, 0(R1)
+    display
+    j drawEnd
