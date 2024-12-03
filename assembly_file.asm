@@ -29,30 +29,32 @@ makeScreenRed:
     display
 
     # Check if we've reached the end of the screen
-    beq R1, R2, drawEnd
+    beq R1, R2, doneDrawing
 
     j makeScreenRed
 
-drawEnd:
+doneDrawing:
+    lw R1, screenStart
+checkKeyInput:
     lw R4, keyboardMem    # Load keyboard memory value
     lw R4, 0(R4)
     lw R5, sKey  
     beq R4, R5, drawBlue
     lw R5, wKey  
     beq R4, R5, drawGreen
-    j drawEnd
+    j checkKeyInput
 
 
 drawBlue:
-    lw R1, screenStart
     lw R3, colorBlue      # Change current color to blue
     sw R3, 0(R1)
+    addi R1, R1, 1
     display
-    j drawEnd
+    j checkKeyInput
      
 drawGreen:
-    lw R1, screenStart
     lw R3, colorGreen      # Change current color to blue
     sw R3, 0(R1)
+    addi R1, R1, 1
     display
-    j drawEnd
+    j checkKeyInput
