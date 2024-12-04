@@ -73,6 +73,8 @@ def encode_instruction(line_num, instruction, label_table, data_table):
     Encodes a single instruction into a binary string (16 bits)
     """
     parts = instruction.replace(",", " ").split() # Remove leading/trailing spaces and split by spaces and commas
+    print(instruction)
+    print(parts)
     if parts[0] == "j" or parts[0] == "jal" or parts[0] == "jr":
         target_address = "0" * 12  # Default to 12 zeros
         if parts[0] == "jr":

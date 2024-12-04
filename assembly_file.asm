@@ -1,7 +1,7 @@
 .data
 # Screen info
 screenStart: 16384    # 0x4000
-screenEnd: 24576      # 0x6000
+screenEnd: 24576      # 0x6000  
 rowShift: 128 #how many pixels in a width of the screen
 
 #colors
@@ -26,7 +26,6 @@ j main
 main:
     lw R1, screenStart    # Screen start address
     lw R2, screenEnd      # Screen end address
-    lw R3, colorRed       # Initial color (red)
 
 checkKeyInput:
     lw R4, keyboardMem    # Load keyboard memory value
@@ -35,8 +34,10 @@ checkKeyInput:
     beq R4, R5, rightArrowPressed
     lw R5, leftArrow  
     beq R4, R5, leftArrowPressed
-    lw R5, spaceKey  
-    beq R4, R5, spacePressed
+    lw R5, upArrow  
+    beq R4, R5, upArrowPressed
+    lw R5, downArrow  
+    beq R4, R5, downArrowPressed
     j checkKeyInput
 
 
@@ -51,6 +52,9 @@ leftArrowPressed:
     display
     j checkKeyInput
 
+checkKeyInputIntermediate:
+    j checkKeyInput
+
 
 rightArrowPressed:
     lw R3, colorGreen 
@@ -62,22 +66,26 @@ rightArrowPressed:
     display
     j checkKeyInput
 
-#R1 holds the value for where the cursor is. screenStart: 16384, screenEnd: 24576 
-#13,904 total pixels in this screen. 
-#the goal is to getclosest to 6954, but well say 
-# 7400> X > 6600 is a succses of cutting the screen in half.
-#if R1 is greater than 6600 and less than 7400,
-        #set R6 to 1
-spacePressed:
-    addi R7, R0, 100      
-    slt R2, R7, R1    
-    beq R2, R0, endSpaceCheck 
 
-    addi R7, R0, 1000       
-    slt R2, R1, R7    
-    beq R2, R0, endSpaceCheck  
+upArrowPressed:
+    lw R3, colorBlue       # Load the color for up arrow
+    sw R3, 0(R1)           # Set the current address to blue
+    lw R7, screenStart     # Load the start of the screen
+    slt R2, R7, R1         # Check if R1 is greater than screenStart
+    beq R2, R0, checkKeyInputIntermediate  # If not, stay within bounds
+    lw R5, rowShift        # Load the row shift value
+    sub R1, R1, R5         # Move up one row (subtract row width)
+    display
+    j checkKeyInput
 
-    addi R6, R0, 1    
 
-endSpaceCheck:
-    j checkKeyInput   
+downArrowPressed:          
+    lw R5, rowShift         
+    lw R7, screenEnd       
+    slt R4, R1, R7         
+    beq R4, R0, checkKeyInputIntermediate 
+    lw R3, colorYellow     
+    sw R3, 0(R1) 
+    add R1, R1, R5         
+    display
+    j checkKeyInput
