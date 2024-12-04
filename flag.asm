@@ -18,7 +18,7 @@ upArrow: 38
 downArrow: 40
 leftArrow: 37
 rightArrow: 39
-spaceKey: 32
+#spaceKey: 32
 
 .text
 j main
@@ -31,12 +31,14 @@ main:
 checkKeyInput:
     lw R4, keyboardMem    # Load keyboard memory value
     lw R4, 0(R4)
+    lw R5, upArrow  
+    beq R4, R5, upArrowPressed
+    lw R5, downArrow  
+    beq R4, R5, downArrowPressed
     lw R5, rightArrow  
     beq R4, R5, rightArrowPressed
     lw R5, leftArrow  
     beq R4, R5, leftArrowPressed
-    lw R5, spaceKey  
-    beq R4, R5, spacePressed
     j checkKeyInput
 
 
@@ -44,9 +46,6 @@ checkKeyInput:
 leftArrowPressed:
     lw R3, colorRed  
     sw R3, 0(R1)    
-    lw R7, screenStart    #this and the next 2 lines make sure u dont go off the screen 
-    slt R2, R1, R7
-    bne R2, R0, checkKeyInput
     addi R1, R1, -1
     display
     j checkKeyInput
@@ -55,29 +54,20 @@ leftArrowPressed:
 rightArrowPressed:
     lw R3, colorGreen 
     sw R3, 0(R1)
-    lw R7, screenEnd    #this and the next 2 lines make sure u dont go off the screen 
-    slt R2, R1, R7
-    beq R2, R0, checkKeyInput
     addi R1, R1, 1
     display
     j checkKeyInput
 
-#R1 holds the value for where the cursor is. screenStart: 16384, screenEnd: 24576 
-#13,904 total pixels in this screen. 
-#the goal is to getclosest to 6954, but well say 
-# 7400> X > 6600 is a succses of cutting the screen in half.
-#if R1 is greater than 6600 and less than 7400,
-        #set R6 to 1
-spacePressed:
-    addi R7, R0, 100      
-    slt R2, R7, R1    
-    beq R2, R0, endSpaceCheck 
+downArrowPressed:
+    lw R3, colorBlack  
+    sw R3, 0(R1)
+    addi R1, R1, 128 #(the row shift)
+    display
+    j checkKeyInput
 
-    addi R7, R0, 1000       
-    slt R2, R1, R7    
-    beq R2, R0, endSpaceCheck  
-
-    addi R6, R0, 1    
-
-endSpaceCheck:
-    j checkKeyInput   
+upArrowPressed:
+    lw R3, colorYellow     
+    sw R3, 0(R1)
+    addi R1, R1, -128
+    display
+    j checkKeyInput
