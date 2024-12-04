@@ -1,5 +1,3 @@
-#TODO: if you have the instruction "j ..." thats not jal, j, or jr, the error thrown isnt useful
-
 def preprocess_lines(lines):
     """
     remove comments and whitespace

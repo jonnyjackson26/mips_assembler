@@ -1,3 +1,5 @@
+#USERS MANUAL:
+#CONTROL WITH UP DOWN LEFT AND RIGHT ARROW KEYS
 .data
 # Screen info
 screenStart: 16384    # 0x4000
@@ -68,13 +70,13 @@ rightArrowPressed:
 
 
 upArrowPressed:
-    lw R3, colorBlue       # Load the color for up arrow
-    sw R3, 0(R1)           # Set the current address to blue
-    lw R7, screenStart     # Load the start of the screen
-    slt R2, R7, R1         # Check if R1 is greater than screenStart
-    beq R2, R0, checkKeyInputIntermediate  # If not, stay within bounds
-    lw R5, rowShift        # Load the row shift value
-    sub R1, R1, R5         # Move up one row (subtract row width)
+    lw R3, colorBlue       
+    sw R3, 0(R1)           
+    lw R7, screenStart     
+    slt R2, R7, R1         
+    beq R2, R0, checkKeyInputIntermediate  # stay within bounds
+    lw R5, rowShift        
+    sub R1, R1, R5         
     display
     j checkKeyInput
 
